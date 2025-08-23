@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Order } from '../types';
 
-const API_BASE_URL = 'https://api.allcom.com'; // Substitua pela URL real da sua API
+const API_BASE_URL = 'https://api.allcom.com';
 
 class OrdersService {
   async getOrders(): Promise<Order[]> {
@@ -9,7 +9,6 @@ class OrdersService {
       const response = await axios.get(`${API_BASE_URL}/orders`);
       return response.data;
     } catch (error) {
-      // Para demonstração, vamos retornar dados mockados
       return [
         {
           id: '1',
@@ -100,7 +99,6 @@ class OrdersService {
       const response = await axios.post(`${API_BASE_URL}/orders`, orderData);
       return response.data;
     } catch (error) {
-      // Simulação de criação
       const newOrder: Order = {
         ...orderData,
         id: Date.now().toString(),

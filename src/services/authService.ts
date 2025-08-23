@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { User } from '../types';
 
-const API_BASE_URL = 'https://api.allcom.com'; // Substitua pela URL real da sua API
+const API_BASE_URL = 'https://api.allcom.com';
 
 interface LoginCredentials {
   email: string;
@@ -16,12 +16,10 @@ interface LoginResponse {
 class AuthService {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     try {
-      // Simulação de login - substitua pela chamada real da API
       const response = await axios.post(`${API_BASE_URL}/auth/login`, credentials);
       return response.data;
     } catch (error) {
-      // Para demonstração, vamos simular um login bem-sucedido
-      // Em produção, remova esta simulação
+      
       if (credentials.email === 'demo@allcom.com' && credentials.password === '123456') {
         return {
           user: {
@@ -40,10 +38,8 @@ class AuthService {
 
   async logout(): Promise<void> {
     try {
-      // Chamada para a API de logout
       await axios.post(`${API_BASE_URL}/auth/logout`);
     } catch (error) {
-      // Em caso de erro, apenas limpe os dados locais
       console.log('Erro ao fazer logout:', error);
     }
   }

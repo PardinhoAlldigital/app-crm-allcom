@@ -24,6 +24,7 @@ import { CardDescription, CardFooter, CardHeader, CardInfo, CardTitle, CardValue
 import { StatusOrderBadge, StatusText } from '../components/StatusComponets';
 import { ClientText, DateText, ItemsTitle, ItemText } from '../components/TextComponents';
 import { InfoIcon, InfoItem, InfoText } from '../components/InfoComponents';
+import { formatCurrency, formatDate, filterOrders, orderFilters } from '../utils';
 
 interface OrdersScreenProps {
   navigation: any;
@@ -56,29 +57,7 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({ navigation }) => {
     }
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR');
-  };
-
-  const filteredOrders = orders.filter(order => {
-    if (filter === 'all') return true;
-    return order.status === filter;
-  });
-
-  const filters = [
-    { key: 'all', label: 'Todos' },
-    { key: 'pending', label: 'Pendentes' },
-    { key: 'processing', label: 'Processando' },
-    { key: 'shipped', label: 'Enviados' },
-    { key: 'delivered', label: 'Entregues' },
-  ];
+  const filteredOrders = filterOrders(orders, filter);
 
   const handleOrderPress = (order: Order) => {
     const itemsList = order.items.map(item => 
@@ -111,7 +90,7 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({ navigation }) => {
         }
       >
         <FilterContainer>
-          {filters.map(filterItem => (
+          {orderFilters.map(filterItem => (
             <FilterButton
               key={filterItem.key}
               active={filter === filterItem.key}
@@ -133,7 +112,7 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({ navigation }) => {
             <EmptyDescription>
               {filter === 'all' 
                 ? 'Você ainda não possui pedidos cadastrados.\nToque no botão + para adicionar seu primeiro pedido.'
-                : `Não há pedidos com o status "${filters.find(f => f.key === filter)?.label.toLowerCase()}".`
+                : `Não há pedidos com o status "${orderFilters.find(f => f.key === filter)?.label.toLowerCase()}".`
               }
             </EmptyDescription>
           </EmptyState>

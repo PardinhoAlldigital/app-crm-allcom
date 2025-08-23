@@ -20,6 +20,7 @@ import { CardDescription, CardFooter, CardHeader, CardInfo, CardTitle, CardValue
 import { StatusBadge, StatusText } from '../components/StatusComponets';
 import { InfoIcon, InfoItem, InfoText } from '../components/InfoComponents';
 import { ClientText, DateText } from '../components/TextComponents';
+import { formatDate, filterContracts, contractFilters } from '../utils';
 
 interface ContractsScreenProps {
   navigation: any;
@@ -58,21 +59,7 @@ const ContractsScreen: React.FC<ContractsScreenProps> = ({ navigation }) => {
     }).format(value);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR');
-  };
-
-  const filteredContracts = contracts.filter(contract => {
-    if (filter === 'all') return true;
-    return contract.status === filter;
-  });
-
-  const filters = [
-    { key: 'all', label: 'Todos' },
-    { key: 'active', label: 'Ativos' },
-    { key: 'pending', label: 'Pendentes' },
-    { key: 'completed', label: 'Concluídos' },
-  ];
+  const filteredContracts = filterContracts(contracts, filter);
 
   const handleContractPress = (contract: Contract) => {
     Alert.alert(
@@ -101,7 +88,7 @@ const ContractsScreen: React.FC<ContractsScreenProps> = ({ navigation }) => {
         }
       >
         <FilterContainer>
-          {filters.map(filterItem => (
+          {contractFilters.map(filterItem => (
             <FilterButton
               key={filterItem.key}
               active={filter === filterItem.key}
@@ -122,9 +109,9 @@ const ContractsScreen: React.FC<ContractsScreenProps> = ({ navigation }) => {
             <EmptyTitle>Nenhum contrato encontrado</EmptyTitle>
             <EmptyDescription>
               {filter === 'all' 
-                ? 'Você ainda não possui contratos cadastrados.\nToque no botão + para adicionar seu primeiro contrato.'
-                : `Não há contratos com o status "${filters.find(f => f.key === filter)?.label.toLowerCase()}".`
-              }
+              ? 'Você ainda não possui contratos cadastrados.\nToque no botão + para adicionar seu primeiro contrato.'
+              : `Não há contratos com o status "${contractFilters.find(f => f.key === filter)?.label.toLowerCase()}".`
+            }
             </EmptyDescription>
           </EmptyState>
         ) : (

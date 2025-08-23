@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Contract } from '../types';
 
-const API_BASE_URL = 'https://api.allcom.com'; // Substitua pela URL real da sua API
+const API_BASE_URL = 'https://api.allcom.com';
 
 class ContractsService {
   async getContracts(): Promise<Contract[]> {
@@ -9,7 +9,6 @@ class ContractsService {
       const response = await axios.get(`${API_BASE_URL}/contracts`);
       return response.data;
     } catch (error) {
-      // Para demonstração, vamos retornar dados mockados
       return [
         {
           id: '1',

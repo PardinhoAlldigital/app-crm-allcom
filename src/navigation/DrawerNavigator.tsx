@@ -185,11 +185,11 @@ const MainNavigator: React.FC<MainNavigatorProps> = ({ currentScreen, onMenuPres
 
   const getScreenTitle = (screen: keyof DrawerParamList) => {
     switch (screen) {
-      case 'Home': return 'AllcomApp';
+      case 'Home': return 'CRM Allcom';
       case 'Contracts': return 'Contratos';
       case 'Orders': return 'Pedidos';
       case 'Profile': return 'Perfil';
-      default: return 'AllcomApp';
+      default: return 'CRM Allcom';
     }
   };
 

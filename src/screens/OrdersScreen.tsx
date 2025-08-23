@@ -13,216 +13,17 @@ import { fetchOrders } from '../store/ordersSlice';
 import { theme } from '../styles/theme';
 import { Order } from '../types';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
-const Container = styled(View)`
-  flex: 1;
-  background-color: ${theme.colors.backgroundSecondary};
-`;
-
-const Header = styled(View)`
-  background-color: ${theme.colors.primary};
-  padding: ${theme.spacing.xl}px ${theme.spacing.lg}px ${theme.spacing.lg}px;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom-left-radius: ${theme.borderRadius.xl}px;
-  border-bottom-right-radius: ${theme.borderRadius.xl}px;
-`;
-
-const HeaderTitle = styled(Text)`
-  color: ${theme.colors.text.white};
-  font-size: ${theme.fontSize.xl}px;
-  font-weight: ${theme.fontWeight.bold};
-`;
-
-const AddButton = styled(TouchableOpacity)`
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
-  background-color: ${theme.colors.primaryLight};
-  align-items: center;
-  justify-content: center;
-`;
-
-const Content = styled(ScrollView)`
-  flex: 1;
-  padding: ${theme.spacing.lg}px;
-`;
-
-const FilterContainer = styled(View)`
-  flex-direction: row;
-  margin-bottom: ${theme.spacing.lg}px;
-`;
-
-const FilterButton = styled(TouchableOpacity)<{ active: boolean }>`
-  background-color: ${props => props.active ? theme.colors.primary : theme.colors.background};
-  padding: ${theme.spacing.sm}px ${theme.spacing.md}px;
-  border-radius: ${theme.borderRadius.full}px;
-  margin-right: ${theme.spacing.sm}px;
-  ${theme.shadows.sm};
-`;
-
-const FilterButtonText = styled(Text)<{ active: boolean }>`
-  color: ${props => props.active ? theme.colors.text.white : theme.colors.text.primary};
-  font-size: ${theme.fontSize.sm}px;
-  font-weight: ${theme.fontWeight.medium};
-`;
-
-const OrderCard = styled(TouchableOpacity)`
-  background-color: ${theme.colors.background};
-  border-radius: ${theme.borderRadius.lg}px;
-  padding: ${theme.spacing.lg}px;
-  margin-bottom: ${theme.spacing.md}px;
-  ${theme.shadows.md};
-`;
-
-const CardHeader = styled(View)`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: ${theme.spacing.md}px;
-`;
-
-const CardTitle = styled(Text)`
-  font-size: ${theme.fontSize.lg}px;
-  font-weight: ${theme.fontWeight.semibold};
-  color: ${theme.colors.text.primary};
-  flex: 1;
-  margin-right: ${theme.spacing.sm}px;
-`;
-
-const StatusBadge = styled(View)<{ status: string }>`
-  background-color: ${
-    props => {
-      switch (props.status) {
-        case 'delivered': return theme.colors.success;
-        case 'shipped': return theme.colors.primary;
-        case 'processing': return theme.colors.warning;
-        case 'pending': return theme.colors.secondary;
-        case 'cancelled': return theme.colors.error;
-        default: return theme.colors.text.secondary;
-      }
-    }
-  };
-  padding: ${theme.spacing.xs}px ${theme.spacing.sm}px;
-  border-radius: ${theme.borderRadius.full}px;
-`;
-
-const StatusText = styled(Text)`
-  color: ${theme.colors.text.white};
-  font-size: ${theme.fontSize.xs}px;
-  font-weight: ${theme.fontWeight.semibold};
-  text-transform: uppercase;
-`;
-
-const CardDescription = styled(Text)`
-  font-size: ${theme.fontSize.sm}px;
-  color: ${theme.colors.text.secondary};
-  line-height: 20px;
-  margin-bottom: ${theme.spacing.md}px;
-`;
-
-const CardInfo = styled(View)`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: ${theme.spacing.sm}px;
-`;
-
-const InfoItem = styled(View)`
-  flex-direction: row;
-  align-items: center;
-`;
-
-const InfoIcon = styled(View)`
-  margin-right: ${theme.spacing.xs}px;
-`;
-
-const InfoText = styled(Text)`
-  font-size: ${theme.fontSize.sm}px;
-  color: ${theme.colors.text.secondary};
-`;
-
-const CardValue = styled(Text)`
-  font-size: ${theme.fontSize.xl}px;
-  font-weight: ${theme.fontWeight.bold};
-  color: ${theme.colors.primary};
-  text-align: right;
-`;
-
-const ItemsContainer = styled(View)`
-  background-color: ${theme.colors.backgroundSecondary};
-  border-radius: ${theme.borderRadius.md}px;
-  padding: ${theme.spacing.sm}px;
-  margin-bottom: ${theme.spacing.md}px;
-`;
-
-const ItemsTitle = styled(Text)`
-  font-size: ${theme.fontSize.sm}px;
-  font-weight: ${theme.fontWeight.medium};
-  color: ${theme.colors.text.primary};
-  margin-bottom: ${theme.spacing.xs}px;
-`;
-
-const ItemText = styled(Text)`
-  font-size: ${theme.fontSize.xs}px;
-  color: ${theme.colors.text.secondary};
-  line-height: 16px;
-`;
-
-const CardFooter = styled(View)`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: ${theme.spacing.md}px;
-  padding-top: ${theme.spacing.md}px;
-  border-top-width: 1px;
-  border-top-color: ${theme.colors.border};
-`;
-
-const ClientText = styled(Text)`
-  font-size: ${theme.fontSize.sm}px;
-  font-weight: ${theme.fontWeight.medium};
-  color: ${theme.colors.text.primary};
-  flex: 1;
-`;
-
-const DateText = styled(Text)`
-  font-size: ${theme.fontSize.xs}px;
-  color: ${theme.colors.text.light};
-`;
-
-const EmptyState = styled(View)`
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  padding: ${theme.spacing.xxl}px;
-`;
-
-const EmptyIcon = styled(View)`
-  width: 80px;
-  height: 80px;
-  border-radius: 40px;
-  background-color: ${theme.colors.primaryLight};
-  align-items: center;
-  justify-content: center;
-  margin-bottom: ${theme.spacing.lg}px;
-`;
-
-const EmptyTitle = styled(Text)`
-  font-size: ${theme.fontSize.lg}px;
-  font-weight: ${theme.fontWeight.semibold};
-  color: ${theme.colors.text.primary};
-  margin-bottom: ${theme.spacing.sm}px;
-  text-align: center;
-`;
-
-const EmptyDescription = styled(Text)`
-  font-size: ${theme.fontSize.md}px;
-  color: ${theme.colors.text.secondary};
-  text-align: center;
-  line-height: 22px;
-`;
+import { Container, ItemsContainer } from '../components/Container';
+import { HeaderTitle } from '../components/HeaderTitle';
+import { AddButton } from '../components/AddButton';
+import { Content } from '../components/Content';
+import { Header } from '../components/Header';
+import { FilterButton, FilterButtonText, FilterContainer } from '../components/FiltersCompoents';
+import { EmptyDescription, EmptyIcon, EmptyState, EmptyTitle } from '../components/EmptyComponents';
+import { CardDescription, CardFooter, CardHeader, CardInfo, CardTitle, CardValue, OrderCard } from '../components/CardComponents';
+import { StatusOrderBadge, StatusText } from '../components/StatusComponets';
+import { ClientText, DateText, ItemsTitle, ItemText } from '../components/TextComponents';
+import { InfoIcon, InfoItem, InfoText } from '../components/InfoComponents';
 
 interface OrdersScreenProps {
   navigation: any;
@@ -344,9 +145,9 @@ const OrdersScreen: React.FC<OrdersScreenProps> = ({ navigation }) => {
             >
               <CardHeader>
                 <CardTitle numberOfLines={2}>{order.title}</CardTitle>
-                <StatusBadge status={order.status}>
+                <StatusOrderBadge status={order.status}>
                   <StatusText>{getStatusText(order.status)}</StatusText>
-                </StatusBadge>
+                </StatusOrderBadge>
               </CardHeader>
 
               <CardDescription numberOfLines={2}>

@@ -1,3 +1,4 @@
+import { Contracts, ContractsState } from "./contractsTypes";
 import { User } from "./userTypes";
 
 export interface Contract {
@@ -40,11 +41,6 @@ export interface AuthState {
   isAuthenticated: boolean;
 }
 
-export interface ContractsState {
-  contracts: Contract[];
-  isLoading: boolean;
-  error: string | null;
-}
 
 export interface OrdersState {
   orders: Order[];

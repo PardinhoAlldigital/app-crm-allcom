@@ -1,15 +1,16 @@
 
 import { Contract, Order } from '../types';
+import { Contracts } from '../types/contractsTypes';
 
 /**
- * Filter contracts by status
+ * Filter contracts by type
  * @param contracts - Array of contracts
- * @param filter - Filter key ('all' | 'active' | 'pending' | 'completed' | 'cancelled')
+ * @param filter - Filter key ('all' | 'Simcard' | 'Comodato' | 'Jurídico' | 'Simcard Isca' | 'Lora' | 'Substituição' | 'Flex' | 'Satelital' | 'Api Allmanager')
  * @returns Filtered contracts array
  */
-export const filterContracts = (contracts: Contract[], filter: string): Contract[] => {
+export const filterContracts = (contracts: Contracts[], filter: string): Contracts[] => {
   if (filter === 'all') return contracts;
-  return contracts.filter(contract => contract.status === filter);
+  return contracts.filter(contract => contract.type_contract === filter);
 };
 
 /**
@@ -25,10 +26,15 @@ export const filterOrders = (orders: Order[], filter: string): Order[] => {
 
 export const contractFilters = [
   { key: 'all', label: 'Todos' },
-  { key: 'active', label: 'Ativos' },
-  { key: 'pending', label: 'Pendentes' },
-  { key: 'completed', label: 'Concluídos' },
-  { key: 'cancelled', label: 'Cancelados' },
+  { key: 'Simcard', label: 'Simcard' },
+  { key: 'Comodato', label: 'Comodato' },
+  { key: 'Jurídico', label: 'Jurídico' },
+  { key: 'Simcard Isca', label: 'Simcard Isca' },
+  { key: 'Lora', label: 'Lora' },
+  { key: 'Substituição', label: 'Substituição' },
+  { key: 'Flex', label: 'Flex' },
+  { key: 'Satelital', label: 'Satelital' },
+  { key: 'Api Allmanager', label: 'Api Allmanager' },
 ];
 
 export const orderFilters = [

@@ -1,8 +1,5 @@
-import axios from 'axios';
 import { api } from '../axios/api';
 import { User } from '../types/userTypes';
-
-const API_BASE_URL = 'https://api.allcom.com';
 
 interface LoginCredentials {
   username: string;
@@ -49,7 +46,7 @@ class AuthService {
 
   async logout(): Promise<void> {
     try {
-      await axios.post(`${API_BASE_URL}/auth/logout`);
+      await api.post(`/auth/logout`);
     } catch (error) {
       console.log('Erro ao fazer logout:', error);
     }
@@ -57,20 +54,16 @@ class AuthService {
 
   async refreshToken(token: string): Promise<string> {
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/refresh`, { token });
+      const response = await api.post(`/auth/refresh`, { token });
       return response.data.token;
     } catch (error) {
       throw new Error('Erro ao renovar token');
     }
   }
 
-  async getUserProfile(token: string): Promise<User> {
+  async getUserProfile(): Promise<User> {
     try {
-      const response = await axios.get(`${API_BASE_URL}/user/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await api.get(`/user/profile`);
       return response.data;
     } catch (error) {
       throw new Error('Erro ao buscar perfil do usuário');

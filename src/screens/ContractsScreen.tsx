@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   RefreshControl,
   Alert,
+  FlatList,
+  ActivityIndicator,
+  View,
 } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../store';
-import { fetchContracts } from '../store/contractsSlice';
+import { fetchContracts, resetContracts, setCurrentFilter } from '../store/contractsSlice';
 import { theme } from '../styles/theme';
 import { Contract } from '../types';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -12,7 +15,6 @@ import { Container } from '../components/Container';
 import { Header } from '../components/Header';
 import { HeaderTitle } from '../components/HeaderTitle';
 import { AddButton } from '../components/AddButton';
-import { Content } from '../components/Content';
 import { FilterButton, FilterButtonText, FilterContainer } from '../components/FiltersCompoents';
 import { EmptyDescription, EmptyIcon, EmptyState, EmptyTitle } from '../components/EmptyComponents';
 import { ContractCard } from '../components/ContractCard';
@@ -20,7 +22,14 @@ import { CardDescription, CardFooter, CardHeader, CardInfo, CardTitle, CardValue
 import { StatusBadge, StatusText } from '../components/StatusComponets';
 import { InfoIcon, InfoItem, InfoText } from '../components/InfoComponents';
 import { ClientText, DateText } from '../components/TextComponents';
-import { formatDate, filterContracts, contractFilters } from '../utils';
+import { formatDate, contractFilters } from '../utils';
+import { Contracts } from '../types/contractsTypes';
+import styled from 'styled-components/native';
+
+const LoadingContainer = styled(View)`
+  padding: ${theme.spacing.md}px;
+  align-items: center;
+`;
 
 interface ContractsScreenProps {
   navigation: any;
@@ -28,26 +37,54 @@ interface ContractsScreenProps {
 
 const ContractsScreen: React.FC<ContractsScreenProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
-  const { contracts, isLoading, error } = useAppSelector(state => state.contracts);
+  const { 
+    contracts, 
+    isLoading, 
+    error, 
+    hasMore, 
+    currentPage, 
+    currentFilter 
+  } = useAppSelector(state => state.contracts);
   const [refreshing, setRefreshing] = useState(false);
-  const [filter, setFilter] = useState<string>('all');
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchContracts());
+    dispatch(resetContracts());
+    dispatch(fetchContracts({ page: 1, type_contract: 'all' }));
   }, [dispatch]);
 
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = useCallback(() => {
     setRefreshing(true);
-    dispatch(fetchContracts());
+    dispatch(resetContracts());
+    dispatch(fetchContracts({ page: 1, type_contract: currentFilter }));
     setTimeout(() => setRefreshing(false), 1000);
+  }, [dispatch, currentFilter]);
+
+  const handleFilterPress = useCallback((filterKey: string) => {
+    dispatch(setCurrentFilter(filterKey));
+    dispatch(resetContracts());
+    dispatch(fetchContracts({ page: 1, type_contract: filterKey }));
   }, [dispatch]);
+
+  const loadMoreContracts = useCallback(() => {
+    if (hasMore && !isLoading && !loadingMore) {
+      setLoadingMore(true);
+      dispatch(fetchContracts({ 
+        page: currentPage + 1, 
+        type_contract: currentFilter, 
+        loadMore: true 
+      })).finally(() => setLoadingMore(false));
+    }
+  }, [dispatch, hasMore, isLoading, loadingMore, currentPage, currentFilter]);
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'active': return 'Ativo';
-      case 'pending': return 'Pendente';
-      case 'completed': return 'Concluído';
-      case 'cancelled': return 'Cancelado';
+      case 'Aprovado': return 'Aprovado';
+      case 'Pendente': return 'Pendente';
+      case 'Recusado': return 'Recusado';
+      case 'Reprovado': return 'Reprovado';
+      case 'Desativado': return 'Desativado';
+      case 'Ativo': return 'Ativo';
       default: return status;
     }
   };
@@ -59,12 +96,10 @@ const ContractsScreen: React.FC<ContractsScreenProps> = ({ navigation }) => {
     }).format(value);
   };
 
-  const filteredContracts = filterContracts(contracts, filter);
-
-  const handleContractPress = (contract: Contract) => {
+  const handleContractPress = (contract: Contracts) => {
     Alert.alert(
-      contract.title,
-      `Cliente: ${contract.client}\nValor: ${formatCurrency(contract.value)}\nStatus: ${getStatusText(contract.status)}\nInício: ${formatDate(contract.startDate)}\nFim: ${formatDate(contract.endDate)}\n\nDescrição:\n${contract.description}`,
+      contract.brand_name + ' - ' + contract.model_name,
+      `Cliente: ${contract.client.name_account}\nValor: ${formatCurrency(contract.price)}\nStatus: ${getStatusText(contract.status_contract)}`,
       [{ text: 'OK' }]
     );
   };
@@ -72,6 +107,68 @@ const ContractsScreen: React.FC<ContractsScreenProps> = ({ navigation }) => {
   const handleAddContract = () => {
     Alert.alert('Em breve', 'Funcionalidade de adicionar contrato em desenvolvimento');
   };
+
+  const renderContract = ({ item }: { item: Contracts }) => (
+    <ContractCard
+      key={item.id_contract}
+      onPress={() => handleContractPress(item)}
+    >
+      <CardHeader>
+        <CardTitle numberOfLines={2}>{"#" + item.id_contract + " - " + (item.operators ?? (item.brand_name + ' - ' + (item.franchiese ?? item.model_name)))}</CardTitle>
+        <StatusBadge status={item.status_contract}>
+          <StatusText>{getStatusText(item.status_contract)}</StatusText>
+        </StatusBadge>
+      </CardHeader>
+
+      <CardDescription numberOfLines={1}>
+        Tipo de contrato: {item.type_contract}
+      </CardDescription>
+      <CardDescription numberOfLines={1}>
+        Vendedor: {item.vendor_contract}
+      </CardDescription>
+
+      <CardInfo>
+        <InfoItem>
+          <InfoIcon>
+            <Icon name="event" size={16} color={theme.colors.text.secondary} />
+          </InfoIcon>
+          <InfoText>{formatDate(item.date_client_approved)}</InfoText>
+        </InfoItem>
+        <CardValue>{formatCurrency((item.monthly_payment ?? item.price))}</CardValue>
+      </CardInfo>
+
+      <CardFooter>
+        <ClientText numberOfLines={1}>
+          <Icon name="business" size={14} color={theme.colors.text.secondary} /> {'lucas pardinho'}
+        </ClientText>
+        <DateText>Criado em {formatDate(item.created_at)}</DateText>
+      </CardFooter>
+    </ContractCard>
+  );
+
+  const renderFooter = () => {
+    if (!loadingMore) return null;
+    return (
+      <LoadingContainer>
+        <ActivityIndicator size="small" color={theme.colors.primary} />
+      </LoadingContainer>
+    );
+  };
+
+  const renderEmpty = () => (
+    <EmptyState>
+      <EmptyIcon>
+        <Icon name="description" size={40} color={theme.colors.primary} />
+      </EmptyIcon>
+      <EmptyTitle>Nenhum contrato encontrado</EmptyTitle>
+      <EmptyDescription>
+        {currentFilter === 'all' 
+        ? 'Você ainda não possui contratos cadastrados.\nToque no botão + para adicionar seu primeiro contrato.'
+        : `Não há contratos do tipo "${contractFilters.find(f => f.key === currentFilter)?.label}".`
+      }
+      </EmptyDescription>
+    </EmptyState>
+  );
 
   return (
     <Container>
@@ -82,75 +179,38 @@ const ContractsScreen: React.FC<ContractsScreenProps> = ({ navigation }) => {
         </AddButton>
       </Header>
 
-      <Content
+      <FilterContainer>
+        {contractFilters.map(filterItem => (
+          <FilterButton
+            key={filterItem.key}
+            active={currentFilter === filterItem.key}
+            onPress={() => handleFilterPress(filterItem.key)}
+          >
+            <FilterButtonText active={currentFilter === filterItem.key}>
+              {filterItem.label}
+            </FilterButtonText>
+          </FilterButton>
+        ))}
+      </FilterContainer>
+
+      <FlatList
+        data={contracts}
+        renderItem={renderContract}
+        keyExtractor={(item) => item.id_contract.toString()}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-      >
-        <FilterContainer>
-          {contractFilters.map(filterItem => (
-            <FilterButton
-              key={filterItem.key}
-              active={filter === filterItem.key}
-              onPress={() => setFilter(filterItem.key)}
-            >
-              <FilterButtonText active={filter === filterItem.key}>
-                {filterItem.label}
-              </FilterButtonText>
-            </FilterButton>
-          ))}
-        </FilterContainer>
-
-        {filteredContracts.length === 0 ? (
-          <EmptyState>
-            <EmptyIcon>
-              <Icon name="description" size={40} color={theme.colors.primary} />
-            </EmptyIcon>
-            <EmptyTitle>Nenhum contrato encontrado</EmptyTitle>
-            <EmptyDescription>
-              {filter === 'all' 
-              ? 'Você ainda não possui contratos cadastrados.\nToque no botão + para adicionar seu primeiro contrato.'
-              : `Não há contratos com o status "${contractFilters.find(f => f.key === filter)?.label.toLowerCase()}".`
-            }
-            </EmptyDescription>
-          </EmptyState>
-        ) : (
-          filteredContracts.map(contract => (
-            <ContractCard
-              key={contract.id}
-              onPress={() => handleContractPress(contract)}
-            >
-              <CardHeader>
-                <CardTitle numberOfLines={2}>{contract.title}</CardTitle>
-                <StatusBadge status={contract.status}>
-                  <StatusText>{getStatusText(contract.status)}</StatusText>
-                </StatusBadge>
-              </CardHeader>
-
-              <CardDescription numberOfLines={3}>
-                {contract.description}
-              </CardDescription>
-
-              <CardInfo>
-                <InfoItem>
-                  <InfoIcon>
-                    <Icon name="event" size={16} color={theme.colors.text.secondary} />
-                  </InfoIcon>
-                  <InfoText>{formatDate(contract.startDate)} - {formatDate(contract.endDate)}</InfoText>
-                </InfoItem>
-                <CardValue>{formatCurrency(contract.value)}</CardValue>
-              </CardInfo>
-
-              <CardFooter>
-                <ClientText numberOfLines={1}>
-                  <Icon name="business" size={14} color={theme.colors.text.secondary} /> {contract.client}
-                </ClientText>
-                <DateText>Criado em {formatDate(contract.createdAt)}</DateText>
-              </CardFooter>
-            </ContractCard>
-          ))
-        )}
-      </Content>
+        onEndReached={loadMoreContracts}
+        onEndReachedThreshold={0.1}
+        ListFooterComponent={renderFooter}
+        ListEmptyComponent={!isLoading ? renderEmpty : null}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingHorizontal: theme.spacing.md,
+          paddingBottom: theme.spacing.lg,
+        }}
+        showsVerticalScrollIndicator={false}
+      />
     </Container>
   );
 };

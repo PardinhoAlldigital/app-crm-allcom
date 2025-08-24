@@ -6,10 +6,11 @@ const StatusBadge = styled(View)<{ status: string }>`
   background-color: ${
     props => {
       switch (props.status) {
-        case 'active': return theme.colors.success;
-        case 'pending': return theme.colors.warning;
-        case 'completed': return theme.colors.primary;
-        case 'cancelled': return theme.colors.error;
+        case 'Aprovado': return theme.colors.success;
+        case 'Pendente': return theme.colors.warning;
+        case 'Concluído': return theme.colors.primary;
+        case 'Cancelado': return theme.colors.error;
+        case 'Desativado': return theme.colors.secondary;
         default: return theme.colors.text.secondary;
       }
     }

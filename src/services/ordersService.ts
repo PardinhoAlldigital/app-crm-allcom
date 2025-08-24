@@ -1,12 +1,10 @@
-import axios from 'axios';
 import { Order } from '../types';
-
-const API_BASE_URL = 'https://api.allcom.com';
+import { api } from '../axios/api';
 
 class OrdersService {
   async getOrders(): Promise<Order[]> {
     try {
-      const response = await axios.get(`${API_BASE_URL}/orders`);
+      const response = await api.get(`/orders`);
       return response.data;
     } catch (error) {
       return [
@@ -96,7 +94,7 @@ class OrdersService {
 
   async createOrder(orderData: Omit<Order, 'id' | 'createdAt'>): Promise<Order> {
     try {
-      const response = await axios.post(`${API_BASE_URL}/orders`, orderData);
+      const response = await api.post(`/orders`, orderData);
       return response.data;
     } catch (error) {
       const newOrder: Order = {
@@ -110,7 +108,7 @@ class OrdersService {
 
   async updateOrder(id: string, data: Partial<Order>): Promise<Order> {
     try {
-      const response = await axios.put(`${API_BASE_URL}/orders/${id}`, data);
+      const response = await api.put(`/orders/${id}`, data);
       return response.data;
     } catch (error) {
       throw new Error('Erro ao atualizar pedido');
@@ -119,7 +117,7 @@ class OrdersService {
 
   async deleteOrder(id: string): Promise<void> {
     try {
-      await axios.delete(`${API_BASE_URL}/orders/${id}`);
+      await api.delete(`/orders/${id}`);
     } catch (error) {
       throw new Error('Erro ao deletar pedido');
     }
@@ -127,7 +125,7 @@ class OrdersService {
 
   async getOrderById(id: string): Promise<Order> {
     try {
-      const response = await axios.get(`${API_BASE_URL}/orders/${id}`);
+      const response = await api.get(`/orders/${id}`);
       return response.data;
     } catch (error) {
       throw new Error('Erro ao buscar pedido');

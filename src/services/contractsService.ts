@@ -1,87 +1,105 @@
 import axios from 'axios';
-import { Contract } from '../types';
+// import { Contract } from '../types';
+import { api } from '../axios/api';
+import { Contracts } from '../types/contractsTypes';
 
-const API_BASE_URL = 'https://api.allcom.com';
+interface GetContractsParams {
+  page?: number;
+  per_page?: number;
+  type_contract?: string;
+}
+
+interface ContractsResponse {
+  data: Contracts[];
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+}
 
 class ContractsService {
-  async getContracts(): Promise<Contract[]> {
+  async getContracts(params: GetContractsParams = {}): Promise<ContractsResponse> {
     try {
-      const response = await axios.get(`${API_BASE_URL}/contracts`);
-      return response.data;
+      const { page = 1, per_page = 15, type_contract } = params;
+      
+      let url = `/contract/list?page=${page}&per_page=${per_page}`;
+      
+      if (type_contract && type_contract !== 'all') {
+        url += `&type_contract=${encodeURIComponent(type_contract)}`;
+      }
+      
+      const response = await api.get(url);
+      
+      // Verificar se a resposta tem uma estrutura específica
+      if (response.data && response.data.data && Array.isArray(response.data.data)) {
+        return {
+          data: response.data.data,
+          current_page: response.data.current_page || page,
+          last_page: response.data.last_page || 1,
+          per_page: response.data.per_page || per_page,
+          total: response.data.total || response.data.data.length
+        };
+      }
+      
+      // Se já é um array, retornar com estrutura de paginação
+      if (Array.isArray(response.data)) {
+        return {
+          data: response.data,
+          current_page: page,
+          last_page: 1,
+          per_page: per_page,
+          total: response.data.length
+        };
+      }
+      
+      // Se não é um array, retornar estrutura vazia
+      return {
+        data: [],
+        current_page: page,
+        last_page: 1,
+        per_page: per_page,
+        total: 0
+      };
     } catch (error) {
-      return [
-        {
-          id: '1',
-          title: 'Contrato de Desenvolvimento Web',
-          description: 'Desenvolvimento de sistema web completo para gestão empresarial',
-          value: 25000,
-          status: 'active',
-          startDate: '2024-01-15',
-          endDate: '2024-06-15',
-          client: 'Empresa ABC Ltda',
-          createdAt: '2024-01-10T10:00:00Z'
-        },
-        {
-          id: '2',
-          title: 'Contrato de Manutenção de Sistema',
-          description: 'Manutenção mensal do sistema de vendas',
-          value: 5000,
-          status: 'pending',
-          startDate: '2024-02-01',
-          endDate: '2024-12-31',
-          client: 'Tech Solutions Inc',
-          createdAt: '2024-01-20T14:30:00Z'
-        },
-        {
-          id: '3',
-          title: 'Contrato de Consultoria',
-          description: 'Consultoria em transformação digital',
-          value: 15000,
-          status: 'completed',
-          startDate: '2023-10-01',
-          endDate: '2023-12-31',
-          client: 'Digital Corp',
-          createdAt: '2023-09-25T09:15:00Z'
-        }
-      ];
+      throw new Error('Erro ao buscar contratos');
     }
   }
 
-  async createContract(contractData: Omit<Contract, 'id' | 'createdAt'>): Promise<Contract> {
+  async createContract(contractData: Omit<Contracts, 'id_contract' | 'created_at_contract'>): Promise<Contracts> {
     try {
-      const response = await axios.post(`${API_BASE_URL}/contracts`, contractData);
+      const response = await api.post(`/contracts`, contractData);
       return response.data;
     } catch (error) {
       // Simulação de criação
-      const newContract: Contract = {
+      const newContract: Contracts = {
         ...contractData,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString()
+        id_contract: Date.now(),
+        created_at_contract: new Date().toISOString()
       };
       return newContract;
     }
   }
 
-  async updateContract(id: string, data: Partial<Contract>): Promise<Contract> {
+  async updateContract(id: string, data: Partial<Contracts>): Promise<Contracts> {  
     try {
-      const response = await axios.put(`${API_BASE_URL}/contracts/${id}`, data);
+      const response = await api.put(`/contracts/${id}`, data);
       return response.data;
     } catch (error) {
       throw new Error('Erro ao atualizar contrato');
     }
   }
 
-  async deleteContract(id: string): Promise<void> {
+  async deleteContract(id: number): Promise<void> {
     try {
-      await axios.delete(`${API_BASE_URL}/contracts/${id}`);
+      await api.delete(`/contracts/${id}`);
     } catch (error) {
       throw new Error('Erro ao deletar contrato');
     }
   }
 
-  async getContractById(id: string): Promise<Contract> {
+  async getContractById(id: string): Promise<Partial<Contracts>> {
     try {
-      const response = await axios.get(`${API_BASE_URL}/contracts/${id}`);
+      const response = await api.get(`/contracts/${id}`);
       return response.data;
     } catch (error) {
       throw new Error('Erro ao buscar contrato');

@@ -26,7 +26,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   }, []);
 
   const loadData = () => {
-    dispatch(fetchContracts());
+    dispatch(fetchContracts({}));
     dispatch(fetchOrders());
   };
 
@@ -36,13 +36,25 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     setTimeout(() => setRefreshing(false), 1000);
   }, []);
 
-  const activeContracts = contracts.filter(c => c.status === 'active').length;
-  const pendingOrders = orders.filter(o => o.status === 'pending' || o.status === 'processing').length;
+  const activeContracts = (contracts || []).filter(c => c.status_contract === 'Aprovado').length;
+  const pendingOrders = (orders || []).filter(o => o.status === 'pending' || o.status === 'processing').length;
 
   const recentItems = [
-    ...contracts.slice(0, 2).map(c => ({ ...c, type: 'contract' })),
-    ...orders.slice(0, 2).map(o => ({ ...o, type: 'order' }))
-  ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 4);
+    ...(contracts || []).slice(0, 2).map(c => ({ 
+      ...c, 
+      type: 'contract' as const,
+      title: c.brand_name || `Contrato ${c.id_contract}`,
+      client: c.client?.name_account || 'Cliente não informado',
+      value: c.total_amounth || 0,
+      created_at: c.created_at_contract,
+      id: c.id_contract.toString()
+    })),
+    ...(orders || []).slice(0, 2).map(o => ({ 
+      ...o, 
+      type: 'order' as const,
+      created_at: o.createdAt
+    }))
+  ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 4);
 
 
 

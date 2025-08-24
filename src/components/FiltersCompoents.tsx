@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, ScrollView } from "react-native";
 import styled from 'styled-components/native';
 import { theme } from "../styles/theme";
 
@@ -10,8 +10,13 @@ const FilterButton = styled(TouchableOpacity)<{ active: boolean }>`
   ${theme.shadows.sm};
 `;
 
-const FilterContainer = styled(View)`
-  flex-direction: row;
+const FilterContainer = styled(ScrollView).attrs({
+  horizontal: true,
+  showsHorizontalScrollIndicator: false,
+  contentContainerStyle: {
+    paddingHorizontal: theme.spacing.md,
+  },
+})`
   margin-bottom: ${theme.spacing.lg}px;
 `;
 
@@ -21,4 +26,4 @@ const FilterButtonText = styled(Text)<{ active: boolean }>`
   font-weight: ${theme.fontWeight.medium};
 `;
 
-export {FilterButton, FilterContainer, FilterButtonText} 
+export {FilterButton, FilterContainer, FilterButtonText}

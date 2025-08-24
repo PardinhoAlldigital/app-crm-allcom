@@ -51,7 +51,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       showHeader={true}
       headerProps={{
         welcomeText: "Bem-vindo de volta,",
-        userName: user?.name || 'Usuário'
+        userName: user?.name_user || 'Usuário'
       }}
     >
       <ContentContainer

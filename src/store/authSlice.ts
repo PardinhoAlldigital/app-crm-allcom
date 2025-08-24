@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { AuthState, User } from '../types';
+import { AuthState } from '../types';
 import { authService } from '../services/authService';
+import { User } from '../types/userTypes';
 // import { authService } from '../services/authService';
 
 const initialState: AuthState = {
@@ -12,7 +13,7 @@ const initialState: AuthState = {
 
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
-  async (credentials: { email: string; password: string }) => {
+  async (credentials: { username: string; password: string }) => {
     const response = await authService.login(credentials);
     return response;
   }
@@ -49,7 +50,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload.user;
+        state.user = action.payload.user as User;
         state.token = action.payload.token;
         state.isAuthenticated = true;
       })

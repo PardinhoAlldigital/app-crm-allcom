@@ -12,19 +12,19 @@ interface LoginScreenProps {
 }
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useAppDispatch();
   const { isLoading } = useAppSelector(state => state.auth);
 
   const handleLogin = async () => {
-    if (!email || !password) {
+    if (!username || !password) { 
       Alert.alert('Erro', 'Por favor, preencha todos os campos');
       return;
     }
 
     try {
-      const result = await dispatch(loginUser({ email, password }));
+      const result = await dispatch(loginUser({ username, password }));
       if (loginUser.fulfilled.match(result)) {
         navigation.replace('Main');
       } else {
@@ -36,7 +36,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   };
 
   const fillDemoCredentials = () => {
-    setEmail('demo@allcom.com');
+    setUsername('demo@allcom.com');
     setPassword('123456');
   };
 
@@ -49,12 +49,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
       <FormContainer>
         <FormInput
-          label="E-mail"
+          label="Username"
           iconName="email"
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Digite seu e-mail"
-          keyboardType="email-address"
+          value={username}
+          onChangeText={setUsername}
+          placeholder="Digite seu username"
+          keyboardType="default"
           autoCapitalize="none"
           autoCorrect={false}
         />

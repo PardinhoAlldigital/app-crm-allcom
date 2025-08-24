@@ -1,10 +1,4 @@
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  phone?: string;
-}
+import { User } from "./userTypes";
 
 export interface Contract {
   id: string;

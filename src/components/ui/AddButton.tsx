@@ -1,6 +1,6 @@
 import { TouchableOpacity } from "react-native";
 import styled from 'styled-components/native';
-import { theme } from "../styles/theme";
+import { theme } from "../../styles/theme";
 
 const AddButton = styled(TouchableOpacity)`
   width: 40px;

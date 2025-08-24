@@ -13,17 +13,17 @@ import { fetchOrders } from '../store/ordersSlice';
 import { theme } from '../styles/theme';
 import { Order } from '../types';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Container, ItemsContainer } from '../components/Container';
-import { HeaderTitle } from '../components/HeaderTitle';
-import { AddButton } from '../components/AddButton';
-import { Content } from '../components/Content';
-import { Header } from '../components/Header';
-import { FilterButton, FilterButtonText, FilterContainer } from '../components/FiltersCompoents';
-import { EmptyDescription, EmptyIcon, EmptyState, EmptyTitle } from '../components/EmptyComponents';
-import { CardDescription, CardFooter, CardHeader, CardInfo, CardTitle, CardValue, OrderCard } from '../components/CardComponents';
-import { StatusOrderBadge, StatusText } from '../components/StatusComponets';
-import { ClientText, DateText, ItemsTitle, ItemText } from '../components/TextComponents';
-import { InfoIcon, InfoItem, InfoText } from '../components/InfoComponents';
+import { Container, ItemsContainer } from '../components/layout/Container';
+import { HeaderTitle } from '../components/layout/HeaderTitle';
+import { AddButton } from '../components/ui/AddButton';
+import { Content } from '../components/layout/Content';
+import { Header } from '../components/layout/Header';
+import { FilterButton, FilterButtonText, FilterContainer } from '../components/ui/FiltersCompoents';
+import { EmptyDescription, EmptyIcon, EmptyState, EmptyTitle } from '../components/ui/EmptyComponents';
+import { CardDescription, CardFooter, CardHeader, CardInfo, CardTitle, CardValue, OrderCard } from '../components/ui/CardComponents';
+import { StatusOrderBadge, StatusText } from '../components/ui/StatusComponets';
+import { ClientText, DateText, ItemsTitle, ItemText } from '../components/ui/TextComponents';
+import { InfoIcon, InfoItem, InfoText } from '../components/ui/InfoComponents';
 import { formatCurrency, formatDate, filterOrders, orderFilters } from '../utils';
 
 interface OrdersScreenProps {

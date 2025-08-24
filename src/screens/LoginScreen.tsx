@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Alert } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../store';
 import { loginUser } from '../store/authSlice';
-import { ScreenWrapper, LogoSection } from '../components/LayoutComponents';
-import { FormInput, FormButton, FormContainer, DemoCredentials } from '../components/FormComponents';
+import { ScreenWrapper, LogoSection } from '../components/layout/LayoutComponents';
+import { FormInput, FormButton, FormContainer, DemoCredentials } from '../components/forms/FormComponents';
 
 
 

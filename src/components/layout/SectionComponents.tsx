@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import styled from 'styled-components/native';
-import { theme } from '../styles/theme';
+import { theme } from "../../styles/theme";
 
 // Section Components
 const SectionContainer = styled(View)`

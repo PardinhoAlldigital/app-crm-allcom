@@ -2,13 +2,13 @@ import React from 'react';
 import { Alert } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../store';
 import { logoutUser } from '../store/authSlice';
-import { ScreenLayout, Section } from '../components/SectionComponents';
+import { ScreenLayout, Section } from '../components/layout/SectionComponents';
 import {
   ProfileAvatar,
   ProfileMenuItem,
   ProfileInfoItem,
   ProfileLogoutButton,
-} from '../components/ProfileComponents';
+} from '../components/domain/ProfileComponents';
 
 
 
@@ -77,28 +77,28 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   return (
     <ScreenLayout>
       <ProfileAvatar
-        imageUri={user?.avatar}
-        userName={user?.name || 'Usuário'}
-        userEmail={user?.email || 'email@exemplo.com'}
+        imageUri={String(user?.image_user)}
+        userName={user?.name_user || 'Usuário'}
+        userEmail={user?.email_user || 'email@exemplo.com'}
       />
 
       <Section title="Informações Pessoais">
         <ProfileInfoItem
           iconName="person"
           label="Nome Completo"
-          value={user?.name || 'Não informado'}
+          value={user?.name_user || 'Não informado'}
         />
         <ProfileInfoItem
           iconName="email"
           label="E-mail"
-          value={user?.email || 'Não informado'}
+          value={user?.email_user || 'Não informado'}
         />
-        <ProfileInfoItem
+        {/* <ProfileInfoItem
           iconName="phone"
-          label="Telefone"
-          value={user?.phone || 'Não informado'}
+          label="Username"
+          value={user?.username || 'Não informado'}
           isLast={true}
-        />
+        /> */}
       </Section>
 
       <Section title="Configurações">

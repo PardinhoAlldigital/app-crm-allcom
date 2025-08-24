@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View, ScrollView } from "react-native";
 import styled from 'styled-components/native';
-import { theme } from "../styles/theme";
+import { theme } from "../../styles/theme";
 
 const FilterButton = styled(TouchableOpacity)<{ active: boolean }>`
   background-color: ${props => props.active ? theme.colors.primary : theme.colors.background};
@@ -18,6 +18,8 @@ const FilterContainer = styled(ScrollView).attrs({
   },
 })`
   margin-bottom: ${theme.spacing.lg}px;
+  margin-top: ${theme.spacing.lg}px;
+  min-height: ${theme.spacing.xl}px;
 `;
 
 const FilterButtonText = styled(Text)<{ active: boolean }>`

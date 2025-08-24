@@ -3,8 +3,8 @@ import { RefreshControl } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../store';
 import { fetchContracts } from '../store/contractsSlice';
 import { fetchOrders } from '../store/ordersSlice';
-import { ScreenLayout, Section, StatsContainer, QuickActionsContainer, ContentContainer } from '../components/SectionComponents';
-import { StatCard, QuickActionCard, RecentItemCard } from '../components/CardComponents';
+import { ScreenLayout, Section, StatsContainer, QuickActionsContainer, ContentContainer } from '../components/layout/SectionComponents';
+import { StatCard, QuickActionCard, RecentItemCard } from '../components/ui/CardComponents';
 import { formatCurrency } from '../utils';
 
 
@@ -43,7 +43,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     ...(contracts || []).slice(0, 2).map(c => ({ 
       ...c, 
       type: 'contract' as const,
-      title: c.brand_name || `Contrato ${c.id_contract}`,
+      title: c.brand_name || `Contrato ${c.type_contract}`,
       client: c.client?.name_account || 'Cliente não informado',
       value: c.total_amounth || 0,
       created_at: c.created_at_contract,
@@ -106,7 +106,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         <Section title="Atividades Recentes">
           {recentItems.map((item, index) => (
             <RecentItemCard
-              key={`${item.type}-${item.id}`}
+              key={`${item.type}-${item.id}-${index}`}
               iconName={item.type === 'contract' ? 'description' : 'shopping-cart'}
               title={item.title}
               subtitle={`${item.type === 'contract' ? 'Contrato' : 'Pedido'} • ${item.client}`}

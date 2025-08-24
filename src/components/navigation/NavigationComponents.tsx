@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Modal, Dimensions, TouchableOpacityProps } from 'react-native';
 import styled from 'styled-components/native';
-import { theme } from '../styles/theme';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { theme } from '../../styles/theme';
 
 const { width } = Dimensions.get('window');
 

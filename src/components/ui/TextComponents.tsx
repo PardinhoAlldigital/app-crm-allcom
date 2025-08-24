@@ -1,7 +1,7 @@
 import { Text } from "react-native";
 import styled from "styled-components";
 
-import { theme } from "../styles/theme";
+import { theme } from "../../styles/theme";
 
 const ClientText = styled(Text)`
   font-size: ${theme.fontSize.sm}px;

@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 import styled from 'styled-components/native';
-import { theme } from "../styles/theme";
+import { theme } from "../../styles/theme";
 
 const Header = styled(View)`
   background-color: ${theme.colors.primary};

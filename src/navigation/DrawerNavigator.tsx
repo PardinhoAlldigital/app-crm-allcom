@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Alert } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { Alert, Animated, Dimensions, Easing } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useAppDispatch, useAppSelector } from '../store';
 import { logoutUser } from '../store/authSlice';
@@ -18,7 +18,7 @@ import {
   NavigationMenuItem,
   NavigationLogoutButton,
   NavigationHeaderMenuButton,
-} from '../components/NavigationComponents';
+} from '../components/navigation/NavigationComponents';
 
 const Stack = createStackNavigator<DrawerParamList>();
 
@@ -31,6 +31,42 @@ interface SideMenuProps {
 const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose, onNavigate }) => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
+  const slideAnim = useRef(new Animated.Value(-Dimensions.get('window').width * 0.75)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 400,
+          easing: Easing.bezier(0.25, 0.1, 0.25, 1), // ease-in-out
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 300,
+          easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: -Dimensions.get('window').width * 0.75,
+          duration: 350,
+          easing: Easing.bezier(0.25, 0.1, 0.25, 1), // ease-in-out
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 250,
+          easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [visible, slideAnim, fadeAnim]);
 
   const handleLogout = () => {
     Alert.alert(
@@ -59,11 +95,27 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose, onNavigate }) => 
     <SideMenuOverlay
       visible={visible}
       transparent
-      animationType="slide"
+      animationType="none"
       onRequestClose={onClose}
     >
       <SideMenuContainer>
-        <SideMenuContent>
+        <Animated.View
+          style={[
+            {
+              width: Dimensions.get('window').width * 0.75,
+              backgroundColor: theme.colors.background,
+              paddingTop: 40,
+              paddingBottom: 20,
+              paddingHorizontal: 20,
+              elevation: 5,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.25,
+              shadowRadius: 3.84,
+              transform: [{ translateX: slideAnim }],
+            },
+          ]}
+        >
           <NavigationUserSection
             userName={user?.name_user || 'Usuário'}
             userEmail={user?.email_user || 'usuario@exemplo.com'}
@@ -94,8 +146,18 @@ const SideMenu: React.FC<SideMenuProps> = ({ visible, onClose, onNavigate }) => 
           />
 
           <NavigationLogoutButton onPress={handleLogout} />
-        </SideMenuContent>
-        <SideMenuBackdrop onPress={onClose} />
+        </Animated.View>
+        <Animated.View
+          style={[
+            {
+              flex: 1,
+              backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              opacity: fadeAnim,
+            },
+          ]}
+        >
+          <SideMenuBackdrop onPress={onClose} style={{ backgroundColor: 'transparent' }} />
+        </Animated.View>
       </SideMenuContainer>
     </SideMenuOverlay>
   );

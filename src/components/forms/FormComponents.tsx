@@ -8,8 +8,8 @@ import {
   TouchableOpacityProps,
 } from 'react-native';
 import styled from 'styled-components/native';
-import { theme } from '../styles/theme';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { theme } from '../../styles/theme';
 
 // Input Components
 const InputContainer = styled(View)`
